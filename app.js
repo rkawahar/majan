@@ -427,6 +427,30 @@ async function deletePlayer(id) {
   render();
 }
 
+async function deleteMatch(id) {
+  const match = state.matches.find((item) => item.id === id);
+  if (!match) return;
+
+  const ok = confirm(`第${match.sectionNo}節 第${match.matchNo}試合を削除します。よろしいですか？`);
+  if (!ok) return;
+
+  if (state.remote) {
+    const { error } = await state.db.from("matches").delete().eq("id", id);
+    if (error) {
+      alert(error.message);
+      return;
+    }
+    await loadData();
+  } else {
+    state.matches = state.matches.filter((item) => item.id !== id);
+    state.results = state.results.filter((result) => result.matchId !== id);
+    saveLocal();
+    render();
+  }
+
+  $("#detailDialog").close();
+}
+
 async function addMatch(entries) {
   const next = nextMatchInfo();
   const playedAt = new Date($("#playedAt").value).toISOString();
@@ -470,7 +494,11 @@ function openMatch(id) {
   $("#detailBody").innerHTML = `
     <p class="detail-date">${fullDate(match.playedAt)}</p>
     ${scoreTable(resultsForMatch(id))}
+    <div class="detail-actions">
+      <button class="danger-action" data-delete-match="${id}">この試合を削除</button>
+    </div>
   `;
+  $("[data-delete-match]").addEventListener("click", () => deleteMatch(id));
   $("#detailDialog").showModal();
 }
 

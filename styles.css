@@ -434,6 +434,23 @@ select:focus {
   box-shadow: none;
 }
 
+.detail-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 0 0;
+}
+
+.danger-action {
+  min-height: 42px;
+  border: 1px solid rgba(201, 52, 71, 0.2);
+  border-radius: 8px;
+  padding: 0 14px;
+  background: #fff1f2;
+  color: var(--danger);
+  font-size: 14px;
+  font-weight: 700;
+}
+
 table {
   width: 100%;
   min-width: 520px;
