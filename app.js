@@ -217,7 +217,7 @@ function renderSeatInputs() {
       </label>
       <label>
         <span>素点</span>
-        <input name="score-${seat}" type="number" inputmode="decimal" step="100" placeholder="30000" required>
+        <input name="score-${seat}" type="text" inputmode="decimal" pattern="-?[0-9]*" placeholder="30000" required>
       </label>
     </div>
   `).join("");
@@ -238,8 +238,9 @@ function collectEntries(strict = true) {
   const selected = new Set();
   for (const seat of SEATS) {
     const playerId = $(`[name="player-${seat}"]`).value;
-    const rawScore = Number($(`[name="score-${seat}"]`).value);
-    if (!playerId || Number.isNaN(rawScore)) {
+    const rawScoreText = $(`[name="score-${seat}"]`).value.trim();
+    const rawScore = Number(rawScoreText);
+    if (!playerId || rawScoreText === "" || !Number.isInteger(rawScore)) {
       if (strict) throw new Error("4人分の選手と素点を入力してください");
       return entries;
     }
