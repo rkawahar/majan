@@ -217,11 +217,31 @@ function renderSeatInputs() {
       </label>
       <label>
         <span>素点</span>
-        <input name="score-${seat}" type="text" inputmode="decimal" pattern="-?[0-9]*" placeholder="30000" required>
+        <div class="score-input">
+          <button type="button" data-score-minus="${seat}" aria-label="${seat}の素点にマイナスを付ける">-</button>
+          <input name="score-${seat}" type="text" inputmode="numeric" pattern="-?[0-9]*" placeholder="30000" required>
+        </div>
       </label>
     </div>
   `).join("");
   $$("#seatInputs select, #seatInputs input").forEach((input) => input.addEventListener("input", renderPreview));
+  $$("[data-score-minus]").forEach((button) => {
+    button.addEventListener("click", () => toggleScoreSign(button.dataset.scoreMinus));
+  });
+}
+
+function toggleScoreSign(seat) {
+  const input = $(`[name="score-${seat}"]`);
+  const value = input.value.trim();
+  if (!value) {
+    input.value = "-";
+  } else if (value.startsWith("-")) {
+    input.value = value.slice(1);
+  } else {
+    input.value = `-${value}`;
+  }
+  input.focus();
+  renderPreview();
 }
 
 function renderPreview() {
