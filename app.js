@@ -217,7 +217,7 @@ function renderSeatInputs() {
       </label>
       <label>
         <span>素点</span>
-        <input name="score-${seat}" type="number" inputmode="numeric" step="100" placeholder="30000" required>
+        <input name="score-${seat}" type="number" inputmode="decimal" step="100" placeholder="30000" required>
       </label>
     </div>
   `).join("");
