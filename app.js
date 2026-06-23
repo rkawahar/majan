@@ -1,5 +1,5 @@
 const SEATS = ["東", "南", "西", "北"];
-const RANK_POINTS = [30, 10, -10, -30];
+const RANK_POINTS = [50, 10, -10, -30];
 const STORAGE_KEY = "majan-local-data";
 
 const state = {
