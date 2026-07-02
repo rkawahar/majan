@@ -38,6 +38,7 @@ create policy "public delete players" on players for delete using (true);
 
 create policy "public read matches" on matches for select using (true);
 create policy "public insert matches" on matches for insert with check (true);
+create policy "public update matches" on matches for update using (true) with check (true);
 create policy "public delete matches" on matches for delete using (true);
 
 create policy "public read match_results" on match_results for select using (true);

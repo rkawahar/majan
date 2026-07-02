@@ -38,11 +38,3 @@ set
   game_score = (result.raw_score - 30000) / 1000.0 + recalculated.new_rank_point
 from recalculated
 where result.id = recalculated.id;
-  from match_results
-)
-update match_results as result
-set
-  rank_point = recalculated.new_rank_point,
-  game_score = (result.raw_score - 30000) / 1000.0 + recalculated.new_rank_point
-from recalculated
-where result.id = recalculated.id;

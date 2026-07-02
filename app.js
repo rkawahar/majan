@@ -1,6 +1,7 @@
 const SEATS = ["東", "南", "西", "北"];
 const RANK_POINTS = [50, 10, -10, -30];
 const STORAGE_KEY = "majan-local-data";
+const DISPLAY_TIME_ZONE = "Asia/Tokyo";
 
 const state = {
   players: [],
@@ -21,6 +22,7 @@ function formatScore(value) {
 
 function formatDate(value) {
   return new Intl.DateTimeFormat("ja-JP", {
+    timeZone: DISPLAY_TIME_ZONE,
     month: "2-digit",
     day: "2-digit",
     hour: "2-digit",
@@ -30,6 +32,7 @@ function formatDate(value) {
 
 function fullDate(value) {
   return new Intl.DateTimeFormat("ja-JP", {
+    timeZone: DISPLAY_TIME_ZONE,
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
@@ -122,6 +125,16 @@ function nextMatchInfo() {
     sectionNo: Math.floor(count / 16) + 1,
     matchNo: (count % 16) + 1
   };
+}
+
+function renumberMatches(matches) {
+  return [...matches]
+    .sort((a, b) => a.sectionNo - b.sectionNo || a.matchNo - b.matchNo)
+    .map((match, index) => ({
+      ...match,
+      sectionNo: Math.floor(index / 16) + 1,
+      matchNo: (index % 16) + 1
+    }));
 }
 
 function calculateResults(entries) {
@@ -461,9 +474,25 @@ async function deleteMatch(id) {
       alert(error.message);
       return;
     }
+
+    const renumbered = renumberMatches(state.matches.filter((item) => item.id !== id));
+    for (const matchToUpdate of renumbered) {
+      const original = state.matches.find((item) => item.id === matchToUpdate.id);
+      if (original.sectionNo === matchToUpdate.sectionNo && original.matchNo === matchToUpdate.matchNo) continue;
+
+      const { error: updateError } = await state.db
+        .from("matches")
+        .update({ section_no: matchToUpdate.sectionNo, match_no: matchToUpdate.matchNo })
+        .eq("id", matchToUpdate.id);
+      if (updateError) {
+        alert(`試合は削除されましたが、後続の試合番号を更新できませんでした: ${updateError.message}`);
+        await loadData();
+        return;
+      }
+    }
     await loadData();
   } else {
-    state.matches = state.matches.filter((item) => item.id !== id);
+    state.matches = renumberMatches(state.matches.filter((item) => item.id !== id));
     state.results = state.results.filter((result) => result.matchId !== id);
     saveLocal();
     render();
